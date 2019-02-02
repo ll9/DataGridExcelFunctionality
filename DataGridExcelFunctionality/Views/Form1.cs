@@ -153,6 +153,41 @@ namespace DataGridExcelFunctionality
             {
                 SetSelectedCellsNull();
             }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                var firstSelectedCell = dataGridView1.SelectedCells
+                    .Cast<DataGridViewCell>()
+                    .OrderBy(c => c.RowIndex)
+                    .ThenBy(c => c.ColumnIndex).First();
+                var x = firstSelectedCell.ColumnIndex;
+                var y = firstSelectedCell.RowIndex;
+
+                string[][] items = Clipboard.GetText()
+                    .Split(new string[] { "\r\n" }, StringSplitOptions.None)
+                    .Select(row => row.Split('\t').ToArray()).ToArray();
+
+                if (dataGridView1.SelectedCells.Count == 0)
+                {
+                    return;
+                }
+                else if (dataGridView1.Rows.Count < (y + items.Count()))
+                {
+                    return;
+                }
+                else if (dataGridView1.Columns.Count < (x + items.First().Count()))
+                {
+                    return;
+                }
+
+                for (int yi = 0; yi < items.Count(); yi++)
+                {
+                    for (int xi = 0; xi < items.First().Count(); xi++)
+                    {
+                        dataGridView1[x + xi, y + yi].Value = items[yi][xi];
+                    }
+                }
+
+            }
         }
 
         private void SetSelectedCellsNull()

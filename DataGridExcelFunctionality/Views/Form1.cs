@@ -12,6 +12,10 @@ using System.Windows.Forms;
 
 namespace DataGridExcelFunctionality
 {
+    /// <summary>
+    /// ACHTUNG:
+    /// Bei datagridview 'ClipboardCopyMode' UNBEDINGT auf 'EnableWithoutHeaderText' setzen!!!
+    /// </summary>
     public partial class Form1 : Form
     {
         private DataTable table;
@@ -105,6 +109,46 @@ namespace DataGridExcelFunctionality
             {
                 cell.Value = DBNull.Value;
             }
+        }
+
+        private void dataGridView1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                int rowIndex = dataGridView1.HitTest(e.X, e.Y).RowIndex;
+                int colIndex = dataGridView1.HitTest(e.X, e.Y).ColumnIndex;
+
+                if (rowIndex >= 0 && colIndex >= 0)
+                {
+                    if (!dataGridView1[colIndex, rowIndex].Selected)
+                    {
+                        dataGridView1.ClearSelection();
+                        dataGridView1[colIndex, rowIndex].Selected = true;
+                    }
+                    dataGridView1[colIndex, rowIndex].Selected = true;
+                    contextMenuStrip1.Show(dataGridView1, e.Location);
+                }
+            }
+        }
+
+        private void kopierenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(dataGridView1.GetClipboardContent().GetText());
+        }
+
+        private void ausschneidenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CutDataGridViewSelectedContent();
+        }
+
+        private void einfügenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PasteToDataGridView();
+        }
+
+        private void löschenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetSelectedCellsNull();
         }
     }
 }
